@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speech Emotion Recognition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            text-align: center;
+            color: #250303;
+            overflow: hidden;
+            padding: 20px;
+        }
+        header {
+            background: #ffffff;
+            color: rgb(0, 0, 0);
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #e8491df9 3px solid;
+        }
+        header a {
+            color: #000000;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 16px;
+        }
+        header ul {
+            padding: 0;
+            color: #000000;
+            margin: 0;
+            list-style: none;
+            overflow: hidden;
+        }
+        header li {
+            float: left;
+            color: #000000;
+            display: inline;
+            padding: 0 20px 0 20px;
+        }
+        header #branding {
+            color: #000000;
+            float: left;
+        }
+        header #branding h1 {
+            margin: 0;
+        }
+        header nav {
+            float: right;
+            color: #000000;
+            margin-top: 10px;
+        }
+        header .highlight, header .current a {
+            color: #e8491d;
+            font-weight: bold;
+        }
+        header a:hover {
+            color: #ffffff;
+            font-weight: bold;
+        }
+        #showcase {
+            min-height: 200px;
+            background: url('https://source.unsplash.com/1600x900/?sound,wave') no-repeat center center/cover;
+            text-align: center;
+            color: #ffffff;
+        }
+        #showcase h1 {
+            margin-top: 100px;
+            font-size: 55px;
+            margin-bottom: 10px;
+        }
+        #showcase p {
+            font-size: 20px;
+        }
+        #recognition {
+            padding: 15px;
+            background: #ffffff;
+            color: #000000;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #recognition h2 {
+            text-align: center;
+            color: #000000;
+        }
+        #uploadForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #audioFile {
+            margin-bottom: 10px;
+        }
+        #submitBtn {
+            background-color: #000000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #submitBtn:hover {
+            background-color: #e8491d;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        footer {
+            padding: 20px;
+            margin-top: 20px;
+            color: #000000;
+            background-color: #ffffff;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><span class="highlight">Speech</span> Emotion Recognition</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li class="current"><a href="#showcase">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#recognition">Try It</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section id="showcase">
+        <div class="container">
+            <h1>Understand Emotions in Speech</h1>
+            <p>Our advanced AI model analyzes audio to detect emotions. Try it out below!</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <section id="about">
+            <h2>About Our Project</h2>
+            <p>Our Speech Emotion Recognition project uses state-of-the-art machine learning techniques to analyze audio and detect emotions. We've trained our model on a diverse dataset to recognize various emotions including neutral, calm, happy, sad, angry, fearful, disgust, and surprised.</p>
+        </section>
+
+        <section id="recognition">
+            <h2>Detect Emotion</h2>
+            <form id="uploadForm">
+                <input type="file" id="audioFile" accept="audio/*" required>
+                <button type="submit" id="submitBtn">Detect Emotion</button>
+            </form>
+            <div id="loading">Analyzing audio...</div>
+            <div id="result"></div>
+        </section>
+    </div>
+
+    <footer>
+        <p>Speech Emotion Recognition Project &copy; 2024</p>
+    </footer>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const audioFile = document.getElementById('audioFile').files[0];
+            if (!audioFile) {
+                alert('Please select an audio file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('audio', audioFile);
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').textContent = '';
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('result').textContent = `Detected Emotion: ${data.emotion}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('result').textContent = 'An error occurred. Please try again.';
+            });
+        });
+    </script>
+</body>
+</html>
